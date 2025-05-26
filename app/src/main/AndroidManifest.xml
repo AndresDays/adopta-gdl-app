@@ -13,6 +13,51 @@
         android:theme="@style/Theme.PetBook"
         tools:targetApi="31">
         <activity
+            android:name=".activities.EditarPerfilClinicaActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.ParqueActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.AgregarResenaActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.ResenasActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.EditarPerfilRefugioActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.AlberguePerfilActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.ClinicaPerfilActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.EditarPerfilMascotaActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.RegistroAlbergueActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.RegistroClinicaActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.RegistroMascotaActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.MascotasActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.NoticiasAdopcionesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.ParquesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.VeterinariosActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.ProfileActivity"
             android:exported="false"
             android:theme="@style/Theme.PetBook" />
@@ -25,15 +70,6 @@
             android:name=".activities.MainScreen"
             android:exported="false"
             android:label="@string/title_activity_main_screen"
-            android:theme="@style/Theme.PetBook" />
-        <activity
-            android:name=".activities.OnboardingPetForm"
-            android:exported="false"
-            android:label="@string/title_activity_onboarding_pet_form"
-            android:theme="@style/Theme.PetBook" />
-        <activity
-            android:name=".activities.OnboardingProfileForm"
-            android:exported="false"
             android:theme="@style/Theme.PetBook" />
         <activity
             android:name=".activities.LoginActivity"
