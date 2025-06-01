@@ -28,10 +28,13 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.petbook.R
+import com.example.petbook.activities.ClinicaPerfilActivity
+import com.example.petbook.activities.ClinicasPerfilGeneralActivity
 import com.example.petbook.activities.FeedActivity
 import com.google.firebase.firestore.FirebaseFirestore
 
 data class Clinica(
+    val id: String = "",
     val nombreEstablecimiento: String = "",
     val direccion: String = ""
 )
@@ -47,12 +50,14 @@ fun VeterinariosScreen(onBack: () -> Unit = {}) {
 
     var clinicas by remember { mutableStateOf(listOf<Clinica>()) }
 
-    // Carga los datos desde Firebase
     LaunchedEffect(Unit) {
         FirebaseFirestore.getInstance().collection("clinicas")
             .get()
             .addOnSuccessListener { result ->
-                val lista = result.mapNotNull { it.toObject(Clinica::class.java) }
+                val lista = result.mapNotNull { doc ->
+                    val data = doc.toObject(Clinica::class.java)
+                    data.copy(id = doc.id)
+                }
                 clinicas = lista
             }
     }
@@ -65,7 +70,6 @@ fun VeterinariosScreen(onBack: () -> Unit = {}) {
             .verticalScroll(scrollState),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Flecha y logo centrado
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth(),
@@ -140,7 +144,11 @@ fun VeterinariosScreen(onBack: () -> Unit = {}) {
         }
 
         clinicasFiltradas.forEach {
-            VeterinariaCard(it.nombreEstablecimiento, it.direccion)
+            VeterinariaCard(it.nombreEstablecimiento, it.direccion) {
+                val intent = Intent(context, ClinicasPerfilGeneralActivity::class.java)
+                intent.putExtra("clinicaId", it.id)
+                context.startActivity(intent)
+            }
         }
 
         Spacer(modifier = Modifier.height(32.dp))
@@ -148,12 +156,13 @@ fun VeterinariosScreen(onBack: () -> Unit = {}) {
 }
 
 @Composable
-fun VeterinariaCard(nombre: String, direccion: String) {
+fun VeterinariaCard(nombre: String, direccion: String, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 12.dp)
             .background(Color.White, shape = RoundedCornerShape(20.dp))
+            .clickable { onClick() }
             .padding(24.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {

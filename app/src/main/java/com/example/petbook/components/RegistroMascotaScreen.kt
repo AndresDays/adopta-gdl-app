@@ -45,6 +45,7 @@ fun RegistroMascotaScreen() {
     var raza by remember { mutableStateOf("") }
     var peso by remember { mutableStateOf("") }
     var colonia by remember { mutableStateOf("") }
+    var fotoUrl by remember { mutableStateOf("") }
     var edad by remember { mutableStateOf("") }
     var genero by remember { mutableStateOf("") }
     var tipoMascota = remember { mutableStateMapOf<String, Boolean>() }
@@ -195,7 +196,8 @@ fun RegistroMascotaScreen() {
                                     "genero" to genero,
                                     "peso" to peso,
                                     "colonia" to colonia,
-                                    "edad" to edad
+                                    "edad" to edad,
+                                    "fotoUrl" to fotoUrl
                                 )
 
                                 db.collection("mascotas")

@@ -1,8 +1,7 @@
-// Archivo: AgregarResenaScreen.kt
 package com.example.petbook.screens
 
 import android.app.Activity
-import android.content.Intent
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -11,6 +10,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Place
@@ -30,16 +30,21 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.petbook.R
-import com.example.petbook.activities.AlberguePerfilActivity
-import com.example.petbook.activities.ResenasActivity
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 @Composable
 fun AgregarResenaScreen() {
     val context = LocalContext.current
+    val db = FirebaseFirestore.getInstance()
+    val user = FirebaseAuth.getInstance().currentUser
+
     var puntuacion by remember { mutableStateOf("") }
     var seleccion by remember { mutableStateOf("") }
     var comentario by remember { mutableStateOf(TextFieldValue()) }
     val scrollState = rememberScrollState()
+
+    val clinicaId = (context as? Activity)?.intent?.getStringExtra("clinicaId") ?: ""
 
     Column(
         modifier = Modifier
@@ -59,7 +64,7 @@ fun AgregarResenaScreen() {
             Image(
                 painter = painterResource(id = R.drawable.back_arrow),
                 contentDescription = "Back",
-                modifier = Modifier.size(32.dp).clickable { context.startActivity(Intent(context, ResenasActivity::class.java)) }
+                modifier = Modifier.size(32.dp).clickable { (context as? Activity)?.finish() }
             )
 
             Spacer(modifier = Modifier.width(8.dp))
@@ -81,7 +86,7 @@ fun AgregarResenaScreen() {
         Spacer(modifier = Modifier.height(12.dp))
 
         Image(
-            painter = painterResource(id = R.drawable.albergue1),
+            painter = painterResource(id = R.drawable.vet1),
             contentDescription = "Foto de perfil",
             modifier = Modifier
                 .size(160.dp)
@@ -90,25 +95,15 @@ fun AgregarResenaScreen() {
         )
 
         Spacer(modifier = Modifier.height(8.dp))
-        Text("MayPet", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = Color(0xFF495C8E))
+        Text("Reseña", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = Color(0xFF495C8E))
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(Icons.Default.Place, contentDescription = null, tint = Color.Black)
             Text("GDL", fontWeight = FontWeight.Bold, fontSize = 22.sp)
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Image(
-            painter = painterResource(id = R.drawable.btn_mensaje),
-            contentDescription = "Mensaje",
-            modifier = Modifier
-                .width(240.dp)
-                .height(72.dp)
-        )
-
         Spacer(modifier = Modifier.height(24.dp))
 
-        Text("En la escala del 1 al 10, ¿qué tan satisfactoria ha sido tu experiencia con este establecimiento y sus servicios? (Opcional)", fontSize = 14.sp)
+        Text("En la escala del 1 al 10, ¿qué tan satisfactoria ha sido tu experiencia? (Opcional)", fontSize = 14.sp)
         Spacer(modifier = Modifier.height(8.dp))
 
         OutlinedTextField(
@@ -123,7 +118,7 @@ fun AgregarResenaScreen() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text("¿Podrías seleccionar que tanto recomendarías este establecimiento y sus servicios a otros usuarios de PetBook?", fontSize = 14.sp)
+        Text("¿Recomendarías esta clínica a otros usuarios?", fontSize = 14.sp)
 
         val opciones = listOf("RECOMENDABLE", "PUEDE MEJORAR", "NO RECOMENDABLE")
         opciones.forEach { opcion ->
@@ -167,14 +162,34 @@ fun AgregarResenaScreen() {
                 .width(180.dp)
                 .height(48.dp)
                 .clickable {
-                    Toast.makeText(context, "Reseña enviada", Toast.LENGTH_SHORT).show()
-                    (context as? Activity)?.finish()
+                    if (clinicaId.isNotEmpty()) {
+                        val resena = hashMapOf(
+                            "nombreMascota" to (user?.displayName ?: "Usuario"),
+                            "comentario" to comentario.text,
+                            "calificacion" to (puntuacion.ifBlank { "N/A" }),
+                            "tipo" to seleccion
+                        )
+
+                        db.collection("clinicas")
+                            .document(clinicaId)
+                            .collection("resenas")
+                            .add(resena)
+                            .addOnSuccessListener {
+                                Toast.makeText(context, "Reseña enviada", Toast.LENGTH_SHORT).show()
+                                (context as? Activity)?.finish()
+                            }
+                            .addOnFailureListener {
+                                Toast.makeText(context, "Error al enviar reseña", Toast.LENGTH_SHORT).show()
+                            }
+                    } else {
+                        Toast.makeText(context, "No se encontró la clínica", Toast.LENGTH_SHORT).show()
+                    }
                 }
         )
 
         Spacer(modifier = Modifier.height(24.dp))
         Text(
-            "Las reseñas y calificaciones ayudan a que otros usuarios puedan conocer cómo operan las organizaciones o instituciones de salud.",
+            "Las reseñas ayudan a otros usuarios a tomar decisiones informadas.",
             fontSize = 11.sp,
             color = Color.DarkGray,
             textAlign = TextAlign.Center

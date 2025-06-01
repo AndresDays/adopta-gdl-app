@@ -1,4 +1,4 @@
-// Archivo: PostCard.kt
+
 package com.example.petbook.components
 
 import android.content.Intent

@@ -96,7 +96,7 @@ fun ParquesScreen(onBack: () -> Unit = {}) {
                 painter = painterResource(id = R.drawable.back_arrow),
                 contentDescription = "Back",
                 modifier = Modifier
-                    .size(36.dp)
+                    .size(32.dp)
                     .clickable {
                         context.startActivity(Intent(context, FeedActivity::class.java))
                     }
@@ -107,7 +107,7 @@ fun ParquesScreen(onBack: () -> Unit = {}) {
                 contentDescription = "Logo",
                 modifier = Modifier.size(70.dp)
             )
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.width(32.dp))
         }
 
         Spacer(modifier = Modifier.height(24.dp))

@@ -311,10 +311,13 @@ fun PerfilClinicaScreen() {
     val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
     val db = FirebaseFirestore.getInstance()
 
+    var serviciosExpanded by remember { mutableStateOf(false) }
+
     var nombre by remember { mutableStateOf("") }
     var direccion by remember { mutableStateOf("") }
     var descripcion by remember { mutableStateOf("") }
     var horario by remember { mutableStateOf("") }
+    var servicios by remember { mutableStateOf(listOf<String>()) }
 
     LaunchedEffect(Unit) {
         if (userId.isNotEmpty()) {
@@ -325,6 +328,7 @@ fun PerfilClinicaScreen() {
                         direccion = doc.getString("direccion") ?: ""
                         descripcion = doc.getString("descripcion") ?: ""
                         horario = doc.getString("horario") ?: ""
+                        servicios = (doc.get("servicios") as? List<*>)?.mapNotNull { it?.toString() } ?: listOf()
                     }
                 }
         }
@@ -429,8 +433,20 @@ fun PerfilClinicaScreen() {
                 .padding(end = 4.dp)
                 .width(120.dp)
                 .height(35.dp)
-                .clickable { }
+                .clickable {serviciosExpanded = true }
         )
+
+        DropdownMenu(
+            expanded = serviciosExpanded,
+            onDismissRequest = { serviciosExpanded = false }
+        ) {
+            Column(modifier = Modifier.padding(8.dp)) {
+                Text("Servicios ofrecidos:", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                servicios.forEach {
+                    Text(text = "• $it", fontSize = 15.sp)
+                }
+            }
+        }
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -517,7 +533,7 @@ fun PerfilClinicaScreen() {
             modifier = Modifier
                 .width(160.dp)
                 .height(44.dp)
-                .clickable { }
+                .clickable {context.startActivity(Intent(context, ResenasActivity::class.java)) }
         )
 
         Spacer(modifier = Modifier.height(24.dp))

@@ -1,4 +1,4 @@
-// Archivo: EditarPerfilMascotaScreen.kt
+
 package com.example.petbook.components
 
 import android.app.Activity

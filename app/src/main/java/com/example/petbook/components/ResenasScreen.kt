@@ -1,6 +1,6 @@
-// Archivo: ClinicaResenasScreen.kt
 package com.example.petbook.screens
 
+import android.app.Activity
 import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -13,7 +13,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,13 +28,35 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.petbook.R
 import com.example.petbook.activities.AgregarResenaActivity
-import com.example.petbook.activities.AlberguePerfilActivity
-import com.example.petbook.activities.ResenasActivity
+import com.google.firebase.firestore.FirebaseFirestore
 
 @Composable
 fun ResenasScreen() {
     val scrollState = rememberScrollState()
     val context = LocalContext.current
+    val clinicaId = (context as? Activity)?.intent?.getStringExtra("clinicaId") ?: ""
+    val db = FirebaseFirestore.getInstance()
+    var comentarios by remember { mutableStateOf(listOf<Triple<String, String, String>>()) }
+
+    // Cargar reseñas desde Firebase solo una vez
+    LaunchedEffect(clinicaId) {
+        if (clinicaId.isNotBlank()) {
+            db.collection("clinicas")
+                .document(clinicaId)
+                .collection("resenas")
+                .get()
+                .addOnSuccessListener { result ->
+                    val lista = result.documents.map { doc ->
+                        Triple(
+                            doc.getString("nombreMascota") ?: "Anónimo",
+                            doc.getString("comentario") ?: "Sin comentario",
+                            doc.getString("calificacion") ?: "N/A"
+                        )
+                    }
+                    comentarios = lista
+                }
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -56,7 +78,7 @@ fun ResenasScreen() {
                 modifier = Modifier
                     .align(Alignment.CenterStart)
                     .size(32.dp)
-                    .clickable { context.startActivity(Intent(context, AlberguePerfilActivity::class.java)) }
+                    .clickable { (context as? Activity)?.finish() }
             )
 
             Image(
@@ -101,20 +123,15 @@ fun ResenasScreen() {
             modifier = Modifier
                 .width(120.dp)
                 .height(50.dp)
-                .clickable { context.startActivity(Intent(context, AgregarResenaActivity::class.java)) }
+                .clickable { context.startActivity(Intent(context, AgregarResenaActivity::class.java).apply {
+                    putExtra("clinicaId", clinicaId)
+                }) }
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        val comentarios = listOf(
-            Triple("mascota1", "Excelente servicio, mucha puntualidad.", "10"),
-            Triple("mascota2", "La veterinaria trata muy bien a los animales, 100% recomendable!", "10"),
-            Triple("mascota3", "Me gustó, pero el establecimiento es demasiado pequeño.", "8"),
-            Triple("mascota4", "Excelente!!! :D", "9.5"),
-            Triple("mascota5", "Muy buenos tratamientos", "9")
-        )
-
-        comentarios.forEachIndexed { index, (imagen, texto, calificacion) ->
+        // Mostrar reseñas cargadas
+        comentarios.forEach { (nombre, texto, calificacion) ->
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -127,7 +144,7 @@ fun ResenasScreen() {
                 ) {
                     Row(modifier = Modifier.padding(12.dp)) {
                         Image(
-                            painter = painterResource(id = R.drawable::class.java.getField(imagen).getInt(null)),
+                            painter = painterResource(id = R.drawable.mascota1),
                             contentDescription = null,
                             modifier = Modifier
                                 .size(60.dp)
@@ -136,7 +153,8 @@ fun ResenasScreen() {
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Column(modifier = Modifier.weight(1f)) {
-                            Text(texto, fontWeight = FontWeight.Medium, fontSize = 16.sp)
+                            Text(nombre, fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                            Text(texto, fontSize = 14.sp)
                         }
                     }
                 }

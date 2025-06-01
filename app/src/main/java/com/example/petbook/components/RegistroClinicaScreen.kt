@@ -3,15 +3,12 @@ package com.example.petbook.activities
 import android.content.Intent
 import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -45,7 +42,8 @@ fun RegistroClinicaScreen() {
     } }
     var responsable by remember { mutableStateOf("") }
     var cedula by remember { mutableStateOf("") }
-    var ubicacion by remember { mutableStateOf("") }
+    var direccion by remember { mutableStateOf("") }
+    var descripcion by remember { mutableStateOf("") }
     var horario by remember { mutableStateOf("") }
     var telefono by remember { mutableStateOf("") }
     var servicios = remember { mutableStateMapOf<String, Boolean>() }
@@ -119,7 +117,9 @@ fun RegistroClinicaScreen() {
         )
 
         Spacer(modifier = Modifier.height(8.dp))
-        FormField2("Ubicación (1 o varias):", ubicacion) { ubicacion = it }
+        FormField2("Ubicación (1 o varias):", direccion) { direccion = it }
+        Spacer(modifier = Modifier.height(8.dp))
+        FormField2("Descripción:", descripcion) { descripcion = it }
         Spacer(modifier = Modifier.height(8.dp))
         FormField2("Hora de Atención:", horario) { horario = it }
         Spacer(modifier = Modifier.height(8.dp))
@@ -206,7 +206,8 @@ fun RegistroClinicaScreen() {
                                     "correo" to correo,
                                     "tipoEstablecimiento" to tipoSeleccionado,
                                     "responsable" to responsable,
-                                    "ubicacion" to ubicacion,
+                                    "direccion" to direccion,
+                                    "descripcion" to descripcion,
                                     "horario" to horario,
                                     "telefono" to telefono,
                                     "servicios" to serviciosSeleccionados,
