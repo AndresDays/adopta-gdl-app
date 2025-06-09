@@ -130,7 +130,6 @@ fun ResenasScreen() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Mostrar reseñas cargadas
         comentarios.forEach { (nombre, texto, calificacion) ->
             Box(
                 modifier = Modifier

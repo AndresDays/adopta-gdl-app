@@ -166,15 +166,6 @@ fun PostCard(onMenuClick: () -> Unit = {}) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        PostItem(
-            username = "@kero",
-            time = "Hace 39 minutos",
-            imageRes = R.drawable.kero_selfie,
-            comments = listOf("@milacherry: cutie", "@kuromi: Que bonita selfie!")
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
         Card(
             shape = RoundedCornerShape(16.dp),
             modifier = Modifier.fillMaxWidth(),
